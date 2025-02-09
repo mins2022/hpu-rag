@@ -12,11 +12,8 @@ import os
 
 # export HF_HOME=/mnt/huggingface/hub
 # Define variable to hold llama2 weights naming 
-#name = "meta-llama/Llama-2-7b-chat-hf"
 name = "meta-llama/Llama-3.1-8B-Instruct"
-#name = "/mnt/weka/data/huggingface/hub/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659"
-# Set auth token variable from hugging face 
-#auth_token = "YOUR HUGGING FACE AUTH TOKEN HERE"
+
 my_hf_dir = os.environ.get('HF_HOME')
 
 if my_hf_dir:
@@ -25,7 +22,6 @@ else:
     print("Please set the HF_HOME")
     quit()
 
-#my_db_file = os.getcwd() + "/data/isd-user-guide.pdf"
 my_db_file = os.getcwd() + "/data/gaudi-install.pdf"
 
 try:
