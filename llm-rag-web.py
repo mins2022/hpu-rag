@@ -52,6 +52,17 @@ def check_links(soup, base_url):
             broken_links.append(url)
     return broken_links
 
+# Function to extract commands from the webpage content
+def extract_commands(soup):
+    commands = []
+    # Look for code blocks
+    for code_block in soup.find_all('code'):
+        commands.append(code_block.get_text())
+    # Look for preformatted text
+    for pre_block in soup.find_all('pre'):
+        commands.append(pre_block.get_text())
+    return commands
+
 # Load the tokenizer
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL, cache_dir=HF_HOME)
@@ -65,7 +76,7 @@ try:
     model = AutoModelForCausalLM.from_pretrained(
         MODEL,
         cache_dir=HF_HOME,
-        torch_dtype=torch.float16,
+        torch_dtype=torch.bfloat16,
         rope_scaling={"type": "dynamic", "factor": 2},
         load_in_8bit=False
     )
@@ -137,8 +148,15 @@ while True:
     soup = BeautifulSoup(webpage_content, 'html.parser')
     text_content = soup.get_text()
 
-    # Create a Document object from the text content
-    document = Document(text=text_content, metadata={"source": WEBPAGE_URL})
+    # Extract commands from the webpage content
+    commands = extract_commands(soup)
+
+    # Check for broken links
+    broken_links = check_links(soup, WEBPAGE_URL)
+
+    # Create a Document object from the text content and extracted commands
+    document_content = f"{text_content}\n\nExtracted Commands:\n" + "\n".join(commands)
+    document = Document(text=document_content, metadata={"source": WEBPAGE_URL})
 
     # Create an index from the document
     index = VectorStoreIndex.from_documents([document])
@@ -152,17 +170,10 @@ while True:
             break
         if user_input.lower() == 'new':
             break
-        if "broken link" in user_input.lower():
-            broken_links = check_links(soup, WEBPAGE_URL)
-            if broken_links:
-                response = "Broken links detected:\n" + "\n".join(broken_links)
-            else:
-                response = "No broken links detected."
-        else:
-            try:
-                response = query_engine.query(user_input)
-            except Exception as e:
-                response = f"Error during query: {e}"
+        try:
+            response = query_engine.query(user_input)
+        except Exception as e:
+            response = f"Error during query: {e}"
         print(f"In Webpage Document - {response}")
 
         # Ask the user if they want to continue with the same webpage

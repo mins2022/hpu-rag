@@ -40,7 +40,7 @@ try:
     model = AutoModelForCausalLM.from_pretrained(
         MODEL,
         cache_dir=HF_HOME,
-        torch_dtype=torch.float16,
+        torch_dtype=torch.bfloat16,
         rope_scaling={"type": "dynamic", "factor": 2},
         load_in_8bit=False
     )

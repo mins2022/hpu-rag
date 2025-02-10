@@ -1,4 +1,3 @@
-"""
 # hpu-rag
 Usinf RAG for Gaudi
 
@@ -35,14 +34,15 @@ This script allows you to fetch and analyze the content of a specified webpage. 
 
 2. Example
    ```bash
-   Please enter the URL of the webpage (or type 'quit' to exit): https://docs.habana.ai/en/latest/Installation_Guide/Driver_Installation.html
+   Please enter the URL of the webpage (or type 'quit' to exit): https://docs.habana.ai/en/latest/PyTorch/DeepSpeed/DeepSpeed_User_Guide/DeepSpeed_User_Guide.html#installing-deepspeed-library
    Webpage content fetched successfully.
    How can I help you? (or type 'quit' to exit, 'new' for new webpage)
    Is there any broken link?
-   In Webpage Document - Broken links detected:https://example.com/broken-link
+   In Webpage Document - Broken links detected:
+   https://github.com/HabanaAI/Model-References/tree/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert
+   https://github.com/HabanaAI/Model-References/blob/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert/modeling.py
+   https://github.com/HabanaAI/Megatron-DeepSpeed/tree/1.19.2/megatron/model/gpt_model.py
+   https://github.com/HabanaAI/Model-References/blob/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert/run_pretraining.py
+   
    Do you want to continue checking the same webpage? (yes/no): yes
    How can I help you? (or type 'quit' to exit, 'new' for new webpage)
-   What is the installation guide for drivers?
-   In Webpage Document - The installation guide for drivers is as follows...
-   Do you want to continue checking the same webpage? (yes/no): no
-   Please enter the URL of the webpage (or type 'quit' to exit):
