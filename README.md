@@ -36,8 +36,11 @@ This script allows you to fetch and analyze the content of a specified webpage. 
    ```bash
    Please enter the URL of the webpage (or type 'quit' to exit): https://docs.habana.ai/en/latest/PyTorch/DeepSpeed/DeepSpeed_User_Guide/DeepSpeed_User_Guide.html#installing-deepspeed-library
    Webpage content fetched successfully.
+
    How can I help you? (or type 'quit' to exit, 'new' for new webpage)
+
    Is there any broken link?
+   
    In Webpage Document - Broken links detected:
    https://github.com/HabanaAI/Model-References/tree/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert
    https://github.com/HabanaAI/Model-References/blob/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert/modeling.py
@@ -46,3 +49,25 @@ This script allows you to fetch and analyze the content of a specified webpage. 
    
    Do you want to continue checking the same webpage? (yes/no): yes
    How can I help you? (or type 'quit' to exit, 'new' for new webpage)
+
+   can you provide ZeRO-1 usage example in this webpage?
+  
+   In Webpage Document -  
+   The usage example for ZeRO-1 is not explicitly provided in the webpage. However, it mentions that ZeRO-1 is a configuration that partitions the optimizer states across the ranks so that each process updates its own partition. For further details, refer to Using ZeRO section.
+   
+   However, the webpage does provide an example of ZeRO-2 configuration, which is a more advanced version of ZeRO-1. Here is the example:
+   
+   "zero_optimization": {
+    "stage": 2,
+   ...
+   }
+ 
+   This example is for ZeRO-2, which is an extension of ZeRO-1. If you want to use ZeRO-1, you would need to set the "stage" parameter to 1 instead of 2. However, the webpage does not provide a specific example for ZeRO-1.
+
+   Do you want to continue checking the same webpage? (yes/no): yes
+   How can I help you? (or type 'quit' to exit, 'new' for new webpage) 
+   
+   But there is a ZeRO-3 example in the website. is this mnore advanded version than ZeRO-2?
+   Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
+   In Webpage Document -  
+   The text does not provide a direct comparison between ZeRO-2 and ZeRO-3. However, it does mention that ZeRO-3 is a more advanced version that automatically collects and partitions the model state during the forward and backward passes, which is not mentioned for ZeRO-2. Additionally, ZeRO-3 is recommended to use only optimizers that have been tested with DeepSpeed ZeRO, which may imply that ZeRO-3 is a more complex and advanced configuration. Therefore, it can be inferred that ZeRO-3 is likely a more advanced version than ZeRO-2.
