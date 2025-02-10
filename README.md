@@ -16,7 +16,7 @@ This script fetches and analyzes the content of a specified webpage, allowing yo
 2. **Run `setup.sh` script** 
 
    ```bash
-   ./setup.sh
+   bash ./setup.sh
 
 3. Set HF_HOME and HF_TOKEN
 
