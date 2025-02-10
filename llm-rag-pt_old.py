@@ -3,12 +3,10 @@
 2. Set your Hugging Face home dir as HF_HOME.
 '''
 
-# Import transformer classes for generation
+import os
 from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
-# Import torch for datatype attributes 
 import torch
 import habana_frameworks.torch.core as htcore
-import os
 
 # export HF_HOME=/mnt/huggingface/hub
 # Define variable to hold llama2 weights naming 
