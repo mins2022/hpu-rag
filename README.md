@@ -1,7 +1,7 @@
 # hpu-rag
 Usinf RAG for Gaudi
 
-This script allows you to fetch and analyze the content of a specified webpage. You can ask questions about the content, including checking for broken links. The script uses a language model (LLM) and Retrieval-Augmented Generation (RAG) setup to process and respond to your queries.
+This script fetches and analyzes the content of a specified webpage, allowing you to ask questions about the content. It utilizes a language model (LLM) and a Retrieval-Augmented Generation (RAG) setup to process and respond to your queries, demonstrating a simple example of RAG capabilities.
 
 ## Setup
 
@@ -66,7 +66,7 @@ This script allows you to fetch and analyze the content of a specified webpage. 
 
    Do you want to continue checking the same webpage? (yes/no): yes
    How can I help you? (or type 'quit' to exit, 'new' for new webpage) 
-   
+
    But there is a ZeRO-3 example in the website. is this mnore advanded version than ZeRO-2?
    Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
    In Webpage Document -  
