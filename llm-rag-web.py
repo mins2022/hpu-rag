@@ -25,44 +25,6 @@ if not HF_HOME:
 
 print(f"Using HF from {HF_HOME}")
 
-# Function to fetch and parse webpage content
-def fetch_webpage_content(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        webpage_content = response.text
-        print("Webpage content fetched successfully.")
-        return webpage_content
-    except Exception as e:
-        print(f"Error fetching webpage content: {e}")
-        return None
-
-# Function to check for broken links
-def check_links(soup, base_url):
-    broken_links = []
-    for link in soup.find_all('a', href=True):
-        url = link['href']
-        if not url.startswith('http'):
-            url = os.path.join(base_url, url)
-        try:
-            link_response = requests.head(url, allow_redirects=True)
-            if link_response.status_code >= 400:
-                broken_links.append(url)
-        except requests.RequestException as e:
-            broken_links.append(url)
-    return broken_links
-
-# Function to extract commands from the webpage content
-def extract_commands(soup):
-    commands = []
-    # Look for code blocks
-    for code_block in soup.find_all('code'):
-        commands.append(code_block.get_text())
-    # Look for preformatted text
-    for pre_block in soup.find_all('pre'):
-        commands.append(pre_block.get_text())
-    return commands
-
 # Load the tokenizer
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL, cache_dir=HF_HOME)
@@ -132,6 +94,44 @@ service_context = ServiceContext.from_defaults(
 )
 set_global_service_context(service_context)
 
+# Function to fetch and parse webpage content
+def fetch_webpage_content(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        webpage_content = response.text
+        print("Webpage content fetched successfully.")
+        return webpage_content
+    except Exception as e:
+        print(f"Error fetching webpage content: {e}")
+        return None
+
+# Function to check for broken links
+def check_links(soup, base_url):
+    broken_links = []
+    for link in soup.find_all('a', href=True):
+        url = link['href']
+        if not url.startswith('http'):
+            url = os.path.join(base_url, url)
+        try:
+            link_response = requests.head(url, allow_redirects=True)
+            if link_response.status_code >= 400:
+                broken_links.append(url)
+        except requests.RequestException as e:
+            broken_links.append(url)
+    return broken_links
+
+# Function to extract commands from the webpage content
+def extract_commands(soup):
+    commands = []
+    for code_block in soup.find_all('pre'):
+        command = code_block.get_text().strip()
+        if command:
+            commands.append(command)
+    return commands
+
+commands_cache = []
+
 # Interactive query loop
 while True:
     # Get the URL of the webpage from the user
@@ -149,13 +149,10 @@ while True:
     text_content = soup.get_text()
 
     # Extract commands from the webpage content
-    commands = extract_commands(soup)
-
-    # Check for broken links
-    broken_links = check_links(soup, WEBPAGE_URL)
+    commands_cache = extract_commands(soup)
 
     # Create a Document object from the text content and extracted commands
-    document_content = f"{text_content}\n\nExtracted Commands:\n" + "\n".join(commands)
+    document_content = f"{text_content}\n\nExtracted Commands:\n" + "\n".join(commands_cache)
     document = Document(text=document_content, metadata={"source": WEBPAGE_URL})
 
     # Create an index from the document
@@ -170,11 +167,19 @@ while True:
             break
         if user_input.lower() == 'new':
             break
-        try:
-            response = query_engine.query(user_input)
-        except Exception as e:
-            response = f"Error during query: {e}"
-        print(f"In Webpage Document - {response}")
+        if user_input.lower() == 'list commands':
+            if commands_cache:
+                print("Listing all extracted commands:")
+                for command in commands_cache:
+                    print(command)
+            else:
+                print("No commands have been extracted yet. Please enter a webpage URL first.")
+        else:
+            try:
+                response = query_engine.query(user_input)
+            except Exception as e:
+                response = f"Error during query: {e}"
+            print(f"In Webpage Document - {response}")
 
         # Ask the user if they want to continue with the same webpage
         continue_checking = input("Do you want to continue checking the same webpage? (yes/no): ")
