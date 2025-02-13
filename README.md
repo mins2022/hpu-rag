@@ -40,7 +40,8 @@ This script fetches and analyzes the content of a specified webpage, allowing yo
    How can I help you? (or type 'quit' to exit, 'new' for new webpage)
 
    Is there any broken link?
-   
+
+   Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
    In Webpage Document - Broken links detected:
    https://github.com/HabanaAI/Model-References/tree/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert
    https://github.com/HabanaAI/Model-References/blob/1.19.2/PyTorch/nlp/DeepSpeedExamples/deepspeed-bert/modeling.py
@@ -52,6 +53,7 @@ This script fetches and analyzes the content of a specified webpage, allowing yo
 
    can you provide ZeRO-1 usage example in this webpage?
   
+   Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
    In Webpage Document -  
    The usage example for ZeRO-1 is not explicitly provided in the webpage.
    However, it mentions that ZeRO-1 is a configuration that partitions the optimizer states across the ranks so that each process updates its own partition. For further details, refer to Using ZeRO section.
@@ -70,6 +72,7 @@ This script fetches and analyzes the content of a specified webpage, allowing yo
    How can I help you? (or type 'quit' to exit, 'new' for new webpage) 
 
    But there is a ZeRO-3 example in the website. is this mnore advanded version than ZeRO-2?
+   
    Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
    In Webpage Document -  
    The text does not provide a direct comparison between ZeRO-2 and ZeRO-3.
