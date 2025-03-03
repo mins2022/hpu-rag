@@ -1,3 +1,8 @@
+'''
+1. Please login to Hugging Face before running this script.
+2. Set your Hugging Face home dir as HF_HOME.
+'''
+
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -69,7 +74,7 @@ query_wrapper_prompt = SimpleInputPrompt("{query_str} [/INST]")
 # Create the HuggingFaceLLM instance
 llm = HuggingFaceLLM(
     context_window=4096,
-    max_new_tokens=512,
+    max_new_tokens=256,
     system_prompt=system_prompt,
     query_wrapper_prompt=query_wrapper_prompt,
     model=model,
@@ -101,27 +106,20 @@ def fetch_webpage_content(url):
         print(f"Error fetching webpage content: {e}")
         return None
 
-# Function to use GitHub API to get all files in a repository
-def get_files(repo_url, file_extensions=None):
-    # Extract the owner and repo name from the URL
-    parts = repo_url.rstrip('/').split('/')
-    owner, repo = parts[-2], parts[-1]
-
-    # GitHub API URL to get the repository's file tree
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
-
-    try:
-        response = requests.get(api_url)
-        response.raise_for_status()
-        tree = response.json().get('tree', [])
-        files = [
-            f"https://raw.githubusercontent.com/{owner}/{repo}/main/{item['path']}"
-            for item in tree if file_extensions is None or any(item['path'].endswith(ext) for ext in file_extensions)
-        ]
-        return files
-    except Exception as e:
-        print(f"Error fetching files: {e}")
-        return []
+# Function to check for broken links
+def check_links(soup, base_url):
+    broken_links = []
+    for link in soup.find_all('a', href=True):
+        url = link['href']
+        if not url.startswith('http'):
+            url = os.path.join(base_url, url)
+        try:
+            link_response = requests.head(url, allow_redirects=True)
+            if link_response.status_code >= 400:
+                broken_links.append(url)
+        except requests.RequestException as e:
+            broken_links.append(url)
+    return broken_links
 
 # Function to extract commands from the webpage content
 def extract_commands(soup):
@@ -136,54 +134,29 @@ commands_cache = []
 
 # Interactive query loop
 while True:
-    # Get the URL of the GitHub repository from the user
-    GITHUB_REPO_URL = input("Please enter the URL of the GitHub repository (or type 'quit' to exit): ")
-    if GITHUB_REPO_URL.lower() == 'quit':
+    # Get the URL of the webpage from the user
+    WEBPAGE_URL = input("Please enter the URL of the webpage (or type 'quit' to exit): ")
+    if WEBPAGE_URL.lower() == 'quit':
         break
 
-    # # Get all .py, README.md, .txt, and .json files in the repository
-    # file_links = get_files(GITHUB_REPO_URL, file_extensions=['.py', 'README.md', '.txt', '.json'])
-    # Get all README.md files in the repository
-    file_links = get_files(GITHUB_REPO_URL, file_extensions=['README.md'])
-    if not file_links:
-        print("No files found.")
+    # Fetch the webpage content
+    webpage_content = fetch_webpage_content(WEBPAGE_URL)
+    if not webpage_content:
         continue
 
-    # Count files by extension
-    file_counts = {'README.md': 0}
-    for link in file_links:
-        for ext in file_counts.keys():
-            if link.endswith(ext):
-                file_counts[ext] += 1
+    # Parse the webpage content
+    soup = BeautifulSoup(webpage_content, 'html.parser')
+    text_content = soup.get_text()
 
-    # Print the count of files by extension
-    print("Found files:")
-    for ext, count in file_counts.items():
-        print(f"{ext}: {count} files")
+    # Extract commands from the webpage content
+    commands_cache = extract_commands(soup)
 
-    # Ask the user if they want to process these files
-    process_files = input("Do you want to process these files? (yes/no): ")
-    if process_files.lower() != 'yes':
-        continue
+    # Create a Document object from the text content and extracted commands
+    document_content = f"{text_content}\n\nExtracted Commands:\n" + "\n".join(commands_cache)
+    document = Document(text=document_content, metadata={"source": WEBPAGE_URL})
 
-    documents = []
-    for file_url in file_links:
-        file_content = fetch_webpage_content(file_url)
-        if not file_content:
-            continue
-        file_soup = BeautifulSoup(file_content, 'html.parser')
-        text_content = file_soup.get_text()
-
-        # Extract commands from the file content
-        commands_cache = extract_commands(file_soup)
-
-        # Create a Document object from the text content and extracted commands
-        document_content = f"{text_content}\n\nExtracted Commands:\n" + "\n".join(commands_cache)
-        document = Document(text=document_content, metadata={"source": file_url})
-        documents.append(document)
-
-    # Create an index from the documents
-    index = VectorStoreIndex.from_documents(documents)
+    # Create an index from the document
+    index = VectorStoreIndex.from_documents([document])
 
     # Setup the query engine
     query_engine = index.as_query_engine()

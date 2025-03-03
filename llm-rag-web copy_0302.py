@@ -34,8 +34,8 @@ try:
         MODEL,
         cache_dir=HF_HOME,
         torch_dtype=torch.bfloat16,
-        rope_scaling={"type": "dynamic", "factor": 2},
-        load_in_8bit=False
+        load_in_8bit=False,
+        trust_remote_code=True  # Allow execution of custom code
     )
     print("Model loaded successfully.")
 except Exception as e:
@@ -68,7 +68,9 @@ query_wrapper_prompt = SimpleInputPrompt("{query_str} [/INST]")
 
 # Create the HuggingFaceLLM instance
 llm = HuggingFaceLLM(
-    context_window=4096,
+    # context_window=4096,
+    # max_new_tokens=256,
+    context_window=512,
     max_new_tokens=512,
     system_prompt=system_prompt,
     query_wrapper_prompt=query_wrapper_prompt,
@@ -141,25 +143,16 @@ while True:
     if GITHUB_REPO_URL.lower() == 'quit':
         break
 
-    # # Get all .py, README.md, .txt, and .json files in the repository
-    # file_links = get_files(GITHUB_REPO_URL, file_extensions=['.py', 'README.md', '.txt', '.json'])
-    # Get all README.md files in the repository
-    file_links = get_files(GITHUB_REPO_URL, file_extensions=['README.md'])
+    # Get all .py, README.md, and .txt files in the repository
+    file_links = get_files(GITHUB_REPO_URL, file_extensions=['.py', 'README.md', '.txt'])
     if not file_links:
         print("No files found.")
         continue
 
-    # Count files by extension
-    file_counts = {'README.md': 0}
-    for link in file_links:
-        for ext in file_counts.keys():
-            if link.endswith(ext):
-                file_counts[ext] += 1
-
-    # Print the count of files by extension
+    # List all files
     print("Found files:")
-    for ext, count in file_counts.items():
-        print(f"{ext}: {count} files")
+    for link in file_links:
+        print(link)
 
     # Ask the user if they want to process these files
     process_files = input("Do you want to process these files? (yes/no): ")
